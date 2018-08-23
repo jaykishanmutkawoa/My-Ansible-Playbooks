@@ -1,0 +1,12 @@
+# Author: jmutkawoa@gmail.com
+#
+# This playbook will Add a new user called usertest1 in the group users and will create its home directory as well.
+
+---
+ - hosts: testansi
+   gather_facts: no
+   tasks:
+     - name: Adding new user
+       become: yes
+       become_method: sudo
+       user: name=usertest1 groups=users append=yes state=present createhome=yes
