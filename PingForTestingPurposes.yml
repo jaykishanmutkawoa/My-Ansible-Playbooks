@@ -1,0 +1,13 @@
+# Author: jmutkawoa@gmail.com
+#
+# This playbook is for test only.
+# It performs a ping on the host defined in /etc/ansible/hostss
+
+---
+- hosts: testansi
+  gather_facts: no
+  tasks:
+   - name: testing ping with sudo method
+     become: yes
+     become_method: sudo
+     ping:
