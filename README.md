@@ -35,3 +35,11 @@ This playbook will:
 - Reload the snmpd service.
 - All files handled by Ansible will have a comment at the top mentioning "This file is managed by Ansible for references"
 - It has been adapter for Centos7 only
+
+7. LVMManipulation.yml
+
+This playbook is to create a VG and LV as well as to format the dist to ext4 and mount the disk on specific directory.
+
+8. UpdateGLIBCandRestartNamedService.yml
+
+This playbook will update the Glibc packages and restart the named service.
