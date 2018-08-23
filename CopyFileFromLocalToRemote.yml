@@ -1,0 +1,10 @@
+#Playbook to copy from source (local) to dest(remote)
+#
+---
+- hosts: test
+  gather_facts: no
+  tasks:
+    - name: Testing
+      sudo: yes
+      become_method: sudo
+      copy: src=/tmp/testfile dest=/tmp/testfile
