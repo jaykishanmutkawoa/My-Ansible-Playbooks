@@ -1,0 +1,12 @@
+#Author: jmutkawoa@gmail.com
+#
+#This plabook will delete the user usertest2 and delete its home directory from the system
+
+---
+ - hosts: testansi
+   gather_facts: no
+   tasks:
+     - name: Deleting user from group and its home directory.
+       become: yes
+       become_method: sudo
+       user: name=usertest2 groups=users remove=yes state=absent
