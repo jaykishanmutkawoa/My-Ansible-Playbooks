@@ -1,0 +1,88 @@
+#Author: jmutkawoa@gmail.com
+
+# This playbook will: 
+# 1. Install the SNMP package 
+# 2. Configure the snmpd.conf 
+# 3. Setup logrotate for snmp 
+# 4. Configure the /etc/sysconfig/snmpd file 
+# 5. Add new firewall rules
+# 6. Reload the firewall
+# 7. Reload the snmpd service.
+
+# All files handled by Ansible will have a comment at the top mentioning "This file is managed by Ansible for references"
+# It has been adapter for Centos7 only.
+#
+--- 
+ - hosts: failedinstallationSNMP
+   gather_facts: no
+   become: yes
+   become_method: sudo
+   tasks:
+
+    - name: Install the SNMPD packages.
+      yum:
+        name: "{{ SNMPPackages }}"
+        state: latest
+      vars:
+       SNMPPackages:
+       - net-snmp
+       - net-snmp-libs
+       - net-snmp-utils
+       - net-snmp-agent-libs
+
+    - name: Delete all contents of /etc/snmp/snmpd.conf.
+      shell: cat /dev/null > /etc/snmp/snmpd.conf
+ 
+    - name: Bullet proof approach to edit the snmpd.conf file.
+      lineinfile: dest=/etc/snmp/snmpd.conf line={{ item.line }}
+      with_items:
+        - { line: "# This file has been created by Ansible." }
+        - { line: " " }
+        - { line: "#       sec.name  source          community" } 
+        - { line: "com2sec readonly  default         public" }
+        - { line: "#       groupName      securityModel securityName" }
+        - { line: "group   MyROGroup v1                 readonly" }
+        - { line: "group   MyROGroup v2c                readonly" }
+        - { line: "#       name           incl/excl     subtree         mask(optional)" }
+        - { line: "view    all           included   .1                  80" }
+        - { line: "#       group     context sec.model sec.level prefix read   write  notif" }
+        - { line: access  MyROGroup ""      any       noauth    exact  all    none   none } 
+    
+    - name: Creating the directory /var/log/snmp
+      file: path=/var/log/snmp state=directory
+
+    - name: Configuration to separate the snmp log in sysconfig.
+      lineinfile: dest=/etc/sysconfig/snmpd line={{ item.line  }}
+      with_items:
+        - { line: OPTIONS="-LS0-4d -Lf /var/log/snmp/snmp.log -p /var/run/snmpd.pid -a" }
+    
+    - name: Delete all contents at /etc/logrorate.d/snmpd
+      shell: cat /dev/null > /etc/logrotate.d/snmpd
+    
+    - name: Bullet Proof approach to edit the snmpd file with indentation.
+      lineinfile: dest=/etc/logrotate.d/snmpd line={{ item.snmp }}
+      with_items:
+        - { snmp: "# This file has been created by Ansible." }
+        - { snmp: " " }
+        - { snmp: "/var/log/snmp/snmp.log {" }
+        - { snmp: "rotate 4" }
+        - { snmp: " weekly" }
+        - { snmp: " minsize  1M" }
+        - { snmp: " size     10000000" }
+        - { snmp: " missingok" }
+        - { snmp: " compress" }
+        - { snmp: " delaycompress" }
+        - { snmp: " postrotate" }
+        - { snmp: " /bin/kill -HUP `cat /var/run/snmpd.pid 2> /dev/null` 2> /dev/null || true" }
+        - { snmp: "  endscript" }
+        - { snmp: "daily" }
+        - { snmp: "}" }
+
+    - name: Firewall rules configuration.
+      firewalld: zone=public port=161/udp permanent=true state=enabled 
+
+    - name: Reload Firewall service
+      shell: /bin/firewall-cmd --reload
+   
+    - name: Restart SNMPD service
+      systemd: name=snmpd state=restarted daemon_reload=yes
