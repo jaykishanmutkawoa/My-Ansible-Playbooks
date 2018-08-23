@@ -1,0 +1,30 @@
+# Author: jmutkawoa@gmail.com
+# This playbook is to create a VG and LV as well as to format the dist to ext4 and mount the disk on specific directory.
+
+---
+ - hosts: ansible2
+   user: root
+   tasks:
+    
+    - name: vgcreate
+      lvg:
+            vg: vgdata
+            pvs: /dev/sdc1    
+      
+    - name: lvcreate
+      lvol:
+            vg: vgdata
+            lv: lvdisk
+            size: 500M
+
+    - name: create file system
+      filesystem:
+            fstype: ext4
+            dev: /dev/vgdata/lvdisk
+    
+    - name: mount logical volume
+      mount:
+            name: /disk
+            src: /dev/vgdata/lvdisk
+            fstype: ext4
+            state: mounted  
