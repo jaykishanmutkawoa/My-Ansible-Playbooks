@@ -1,0 +1,42 @@
+# Author: mutkawoa.nitin@orange.com
+
+# This Playbook will retrieve versions of Kernel, Networker, Shinken, BladeLogic and VMtool
+# The output will be appended on a file in /tmp/rhelroot
+
+---
+ - hosts: rhelroot
+   gather_facts: no
+   become: yes
+   become_method: sudo
+   tasks:
+
+     - name: Getting hostname version
+       shell: hostname
+       register: hostname
+
+     - name: Getting uname version
+       shell: uname -r
+       register: uname
+
+     - name:
+       shell: cat /etc/redhat-release
+       register: release
+
+     - name: Getting Networker version
+       shell: rpm -qa | egrep lgtoc
+       register: networker
+
+     - name: Getting Shinken version
+       shell: rpm -qa | egrep nrpe
+       register: nrpe
+
+     - name: Getting Bladelogic version
+       shell: cat /usr/nsh/Version
+       register: blade
+
+     - name: Getting vmtools version
+       shell: vmware-toolbox-cmd -v
+       register: vmtools
+
+     - name: Writing gathered data locally to file.
+       local_action: lineinfile line="{{ hostname.stdout, uname.stdout, release.stdout, networker.stdout, nrpe.stdout, blade.stdout, vmtools.stdout  }}" insertafter=EOF dest=/tmp/rhelroot
