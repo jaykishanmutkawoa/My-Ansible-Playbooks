@@ -1,0 +1,15 @@
+# Author: jmutkawoa@gmailcom
+#
+# This playbook is removing all users with name that start from user* from the group users.
+# To remove all users except those who start with ext*, use "-g wheel" and "grep -v ext*".
+# Tested with Debian and Centos
+---
+ - hosts: testansi
+   gather_facts: no
+   tasks:
+     - shell: for i in $(getent group wheel | cut -d: -f4 | tr "," "\n" | grep -v ext*); do gpasswd -d $i wheel ; done
+       become: yes
+       become_method: sudo
+       register: out
+
+     - debug: msg="{{ out }}"
