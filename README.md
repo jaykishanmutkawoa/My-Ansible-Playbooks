@@ -21,7 +21,7 @@ This playbook is for test only. It performs a ping on the host defined in /etc/a
 
 This playbook is removing all users with name that start from user* from the group users.
 To remove all users except those who start with ext*, use "-g wheel" and "grep -v ext*".
-Example: for i in $(lid -g users | grep -v ext* | cut -d '(' -f 1); do gpasswd -d $i wheel ; done
+The playbook has been tested on Centos and Debian.
 
 6. SNMPConigurationAndPackages.yml
 
@@ -43,3 +43,9 @@ This playbook is to create a VG and LV as well as to format the dist to ext4 and
 8. UpdateGLIBCandRestartNamedService.yml
 
 This playbook will update the Glibc packages and restart the named service.
+
+9. GatherInformationAboutOS.yml
+
+This Playbook will retrieve versions of Kernel, Networker, Shinken, BladeLogic and VMtool
+The output will be appended on a file in /tmp/rhelroot.
+
