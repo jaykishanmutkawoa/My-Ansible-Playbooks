@@ -17,7 +17,7 @@ This plabook will delete the user usertest2 and delete its home directory from t
 
 This playbook is for test only. It performs a ping on the host defined in /etc/ansible/hosts.
 
-5. RemovingSpecificUsersFromGroup_CENTOS.yml
+5. RemovingSpecificUsersFromGroup.yml
 
 This playbook is removing all users with name that start from user* from the group users.
 To remove all users except those who start with ext*, use "-g wheel" and "grep -v ext*".
