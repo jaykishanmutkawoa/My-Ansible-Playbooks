@@ -1,0 +1,48 @@
+# Author: jmutkawoa@gmail.com
+
+# This playbook will:
+# 1. Create account for non-existant users.
+# 2. Add the users to wheel group and setup the permissions.
+# 3. creating the .ssh directory and setup the permission.
+# 4. Configure SELINUX on the .ssh directory.
+# 5. Write key to authorized_key file directly using the bullet proof approach.
+
+# NOTE: It is important to modify the values of the account (YourAccount) and the Key (YourKey) in the vars section of this playbook.
+
+---
+ - hosts: test
+   gather_facts: no
+   become: yes
+   become_method: sudo
+
+#############################################################################################
+################## MODIFY THESE TWO VALUES BEFORE USING THIS PLAYBOOK #######################
+########################## THE VALUES ARE "YourAccount" and "YourKey" ###########################
+#############################################################################################
+
+   vars:
+     YourAccount: "accountnamehere"
+     YourKey: "ssh-rsa 0YOTHzptjcaQH5PaMN7GrQ== user@hostname"
+
+#############################################################################################
+#############################################################################################
+
+   tasks:
+
+    - name: Creating account with home directory and permission.
+      user: name="{{ YourAccount }}" groups=wheel append=yes state=present createhome=yes
+
+    - name: Setting permission and ownership on the directory.
+      file: path=/home/{{ YourAccount }} state=directory mode=0755
+
+    - name: Creating .ssh directory and setup of permission and ownership.
+      file: path=/home/{{ YourAccount }}/.ssh state=directory mode=0700 owner="{{ YourAccount }}" group=users seuser=system_u setype=ssh_home_t
+
+    - name: Creating Authorized key
+      file: path=/home/{{ YourAccount }}/.ssh/authorized_keys state=touch mode=0644 owner="{{ YourAccount }}" group=users seuser=system_u setype=ssh_home_t
+
+    - name: Bullet Proof Approach to edit the authorized key. Public key replicating here.
+      lineinfile: dest=/home/{{ YourAccount }}/.ssh/authorized_keys line={{ item.key }}
+      with_items:
+        - { key: "# This file has been created by Ansible." }
+        - { key: "{{ YourKey }}" }
