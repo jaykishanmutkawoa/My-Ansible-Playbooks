@@ -49,3 +49,12 @@ This playbook will update the Glibc packages and restart the named service.
 This Playbook will retrieve versions of Kernel, Networker, Shinken, BladeLogic and VMtool
 The output will be appended on a file in /tmp/rhelroot.
 
+10. ReplicateUserDirectoryAndKeys.yml
+
+This playbook will:
+- Create account for non-existant users.
+- Add the users to wheel group and setup the permissions.
+- creating the .ssh directory and setup the permission.
+- Configure SELINUX on the .ssh directory.
+- Write key to authorized_key file directly using the bullet proof approach.
+
