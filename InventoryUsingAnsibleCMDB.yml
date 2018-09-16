@@ -23,7 +23,7 @@
          vmwareversion: '{ "vmwareversion": {{ vmwareversion.stdout_lines }} }'
 
   # Commented for testing purposes
-     - debug: var=shinkenversion
+     - debug: var=vmwareversion
 
      - file:
          path: /home/Ansible-Workdesk/out/{{ inventory_hostname }}
