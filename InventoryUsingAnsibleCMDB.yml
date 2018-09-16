@@ -1,0 +1,45 @@
+# Author: mutkawoa.nitin@orange.com
+
+# This playbook will:
+# - Output the server inventory as well as the vmware tool version in two separate files.
+# - Also make sure if the file /home/Ansible-Workdesk/<hostname of server> does exist.
+# - Change the default stdout_lines value to vmwareversion in the JSON file.
+# - 
+
+---
+ - hosts: test
+   gather_facts: no
+   become: yes
+   become_method: sudo
+   tasks:
+
+     - setup:
+       register: setup_res
+
+     - command: vmware-toolbox-cmd -v
+       register: vmwareversion
+
+     - set_fact: 
+         vmwareversion: '{ "vmwareversion": {{ vmwareversion.stdout_lines }} }'
+
+  # Commented for testing purposes
+     - debug: var=shinkenversion
+
+     - file:
+         path: /home/Ansible-Workdesk/out/{{ inventory_hostname }}
+         state: touch
+       delegate_to: localhost
+
+     - copy:
+         content: "{{ setup_res | to_nice_json }}"
+         dest: /home/Ansible-Workdesk/out/{{ inventory_hostname }}
+       delegate_to: localhost
+
+     - file:
+         path: /home/Ansible-Workdesk/out/other_info/vmwaretool/{{ inventory_hostname }}
+         state: touch
+       delegate_to: localhost
+
+     - copy:
+         content: "{{ vmwareversion | to_nice_json }}"
+         dest: /home/Ansible-Workdesk/out/other_info/vmwaretool/{{ inventory_hostname }}
