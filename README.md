@@ -68,3 +68,7 @@ Repository for my Ansible Playbooks:
 - Always use the hash of the password in the password field.
 - The goal is to update the /etc/shadow file on the remote machines.
 
+12. ReconfigureExportPS1BAsh.yml
+
+- Delete .bash_profile
+- Re Append with ps1 configuration
