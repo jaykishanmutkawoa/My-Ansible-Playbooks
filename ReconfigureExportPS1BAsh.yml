@@ -1,0 +1,32 @@
+# Author: jmutkawoa@gmail.com
+
+# This playbook will: 
+# 1. Reconfigure my bash_profile by adding specific line in .bash_profile
+
+# All files handled by Ansible will have a comment at the top mentioning "This file is managed by Ansible for references"
+#
+--- 
+ - hosts: rhel7
+   gather_facts: no
+   become: yes
+   become_method: sudo
+   tasks:
+
+    - name: Delete all contents of /home/user/.bash_profile
+      shell: cat /dev/null > /home/user/.bash_profile
+
+    - name: Bullet Proof approach to edit my bash_profile
+      lineinfile: dest=/home/user/.bash_profile line={{ item.line }}
+      with_items:
+        - { line: "# This file has been created by Ansible." }
+        - { line: " " }
+        - { line: "# Get the aliases and functions" } 
+        - { line: "if [ -f ~/.bashrc ]; then" }
+        - { line: "     . ~/.bashrc" }
+        - { line: "fi"}
+        - { line: " " }
+        - { line: "# User specific environment and startup programs" }
+        - { line: " " }
+        - { line: "PATH=$PATH:$HOME/.local/bin:$HOME/bin" }
+        - { line: "export PATH" } 
+        - { line: 'export PS1="\u@\h \w# "' }
