@@ -1,0 +1,39 @@
+# Author: mutkawoa.nitin@orange.com
+#
+# This playbook will :
+#
+# REMOTE MACHINE TASKS:
+# 1. Update the index.html page which has been saved locally.
+# 2. Create raw info from AWK on remote servers from last command.
+# 3. Copy from source to local.
+# 4. Destroy all remote files created.
+#
+# LOCAL TASKS:
+# 5. Compile all raw info into one sheet and will also remove all blank lines.
+# 6. Add more data about Perimeter and Application.
+# 7. Converting the data into JSON format with AWK.
+# 8. Cleaning old data after conversion.
+# 9. Turning the JSON data into an array for JavaScript compatibility.
+# 10. Moving the file into the source code.
+#
+# Repetition of tasks is required as the volume of servers are too many to accomodate in singular JSON Array.
+
+---
+ - name: running script locally here
+   hosts: 127.0.0.1
+   connection: local
+   gather_facts: no
+   tasks:
+   - name: Inserting date in HTML file
+     shell: dt=`date` ; sed -i "72s/.*/$dt/" /Nitin/AnsibleAuditWorkDesk/user-management/index.html
+
+ - hosts: sirec
+   gather_facts: yes
+   become: yes
+   become_method: sudo
+   tasks:
+
+# I know this is crazy to do with last. I was using an old utils-linux. Consider using better arguments with last if you are using update utils-linux such as --since
+     - name: Creating raw info
+       shell: Date=`date +%b`; t=`hostname -s` && last | grep $Date | awk -v t="$t" '{print t, $1, $4 "-" $5 "-" $6 "-" $7, $9$10, $3 }' | egrep -v 'wtmp|reboot' > /tmp/$t
+
