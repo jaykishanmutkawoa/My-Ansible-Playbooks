@@ -85,4 +85,4 @@
       shell: /bin/firewall-cmd --reload
    
     - name: Restart SNMPD service
-      systemd: name=snmpd state=restarted daemon_reload=yes
+      systemd: name=snmpd state=restarted
