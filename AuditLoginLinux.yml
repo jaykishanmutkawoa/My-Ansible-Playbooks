@@ -1,4 +1,4 @@
-# Author: mutkawoa.nitin@orange.com
+# Author: jmutkawoa@cyberstorm.mu
 #
 # This playbook will :
 #
@@ -27,7 +27,7 @@
    - name: Inserting date in HTML file
      shell: dt=`date` ; sed -i "72s/.*/$dt/" /Nitin/AnsibleAuditWorkDesk/user-management/index.html
 
- - hosts: sirec
+ - hosts: test
    gather_facts: yes
    become: yes
    become_method: sudo
