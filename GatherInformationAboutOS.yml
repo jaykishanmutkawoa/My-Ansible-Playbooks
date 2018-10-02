@@ -1,4 +1,4 @@
-# Author: mutkawoa.nitin@orange.com
+# Author: jmutkawoa@cyberstorm.mu
 
 # This Playbook will retrieve versions of Kernel, Networker, Shinken, BladeLogic and VMtool
 # The output will be appended on a file in /tmp/rhelroot

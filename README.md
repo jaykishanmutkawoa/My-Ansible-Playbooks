@@ -72,3 +72,16 @@ Repository for my Ansible Playbooks:
 
 - Delete .bash_profile
 - Re Append with ps1 configuration
+
+13. InventoryUsingAnsibleCMDB.yml
+
+- Output the server inventory as well as the vmware tool version in two separate files.
+- Also make sure if the file /home/Ansible-Workdesk/<hostname of server> does exist.
+- Change the default stdout_lines value to vmwareversion in the JSON file.
+- For more information, visit https://tunnelix.com/an-agentless-servers-inventory-with-ansible-ansible-cmdb/
+
+14. AuditLoginLinux.yml
+
+- Please see project Tabulogs @ https://github.com/jmutkawoa/TabuLogs
+
+

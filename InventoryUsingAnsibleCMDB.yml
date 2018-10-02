@@ -1,10 +1,9 @@
-# Author: mutkawoa.nitin@orange.com
+# Author: jmutkawoa@cyberstorm.mu
 
 # This playbook will:
 # - Output the server inventory as well as the vmware tool version in two separate files.
 # - Also make sure if the file /home/Ansible-Workdesk/<hostname of server> does exist.
 # - Change the default stdout_lines value to vmwareversion in the JSON file.
-# - 
 
 ---
  - hosts: test
