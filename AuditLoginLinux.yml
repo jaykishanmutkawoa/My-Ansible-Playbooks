@@ -25,7 +25,7 @@
    gather_facts: no
    tasks:
    - name: Inserting date in HTML file
-     shell: dt=`date` ; sed -i "72s/.*/$dt/" /Nitin/AnsibleAuditWorkDesk/user-management/index.html
+     shell: dt=`date` ; sed -i "72s/.*/$dt/" /Tabulogs/perimeter1/index.html
 
  - hosts: test
    gather_facts: yes
@@ -34,6 +34,67 @@
    tasks:
 
 # I know this is crazy to do with last. I was using an old utils-linux. Consider using better arguments with last if you are using update utils-linux such as --since
+# This can be launched any month and it will fetch the log from last month.
      - name: Creating raw info
-       shell: Date=`date +%b`; t=`hostname -s` && last | grep $Date | awk -v t="$t" '{print t, $1, $4 "-" $5 "-" $6 "-" $7, $9$10, $3 }' | egrep -v 'wtmp|reboot' > /tmp/$t
+       shell: Date=`date +%b -d 'last month'`; t=`hostname -s` && last | grep $Date | awk -v t="$t" '{print t, $1, $4 "-" $5 "-" $6 "-" $7, $9$10, $3 }' | egrep -v 'wtmp|reboot' > /tmp/$t
+
+     - name: Copy from source to destination.
+       fetch: src=/tmp/{{ ansible_hostname }} dest=/Tabulogs/AnsibleWorkDesk/Servers flat=yes
+
+     - name: Destroying rememote files
+       shell: rm -f /tmp/{{ ansible_hostname }}
+
+########### LOCAL TASKS
+
+ - name: Working locally
+   hosts: 127.0.0.1
+   connection: local
+   gather_facts: no
+   tasks:
+
+   - name: Merging all the data
+     shell: awk 'NF' /Tabulogs/AnsibleWorkDesk/Servers/* | sed '/^\s*$/d' > /Tabulogs/AnsibleWorkDesk/AllInOne
+
+# Use only if you have a list of Applications and Perimeter for your servers ready.
+
+   - name: Adding more data about Perimeter and Application.
+     shell: awk 'FNR == NR {a[$3] = $1 " " $2; next} { if ($1 in a) { NF++; $NF = a[$1] }; print}' /Tabulogs/AnsibleWorkDesk/rhel7_application_perimeter /Tabulogs/AnsibleWorkDesk/AllInOne > /Tabulogs/AnsibleWorkDesk/AllInOneWithPerimeterAndApplication
+
+# If you dont have the list of Applications and Perimeter, you might need to tweak the awk command by removing the last two columns.
+
+   - name: Creating JSON files to be embed in javaScript (AngularJS )
+     shell: awk '{print "{" "\"" "Hostname" "\"" ":" "\""  $1"\"" "," "\"" "Username" "\"" ":"  "\"" $2"\"" "," "\"" "Login" "\"" ":" "\"" $3"\"" "," "\"" "TimeTaken" "\"" ":"  "\"" $4"\"" ",""\"" "IPAddress" "\"" ":"  "\"" $5"\"" "," "\"" "Application" "\"" ":"  "\"" $6"\"" "," "\"" "Perimeter" "\"" ":"  "\""$7"\"""}" "," }' /Tabulogs/AnsibleWorkDesk/AllInOneWithPerimeterAndApplication  > /Tabulogs/AnsibleWorkDesk/perimeter1/table.js
+
+   - name: Bullet proof approach by putting the JS into form - writing at the beginning of the file
+     lineinfile: dest=/Tabulogs/AnsibleWorkDesk/perimeter1/table.js line={{ item.javascript }} insertbefore=BOF
+     with_items:
+       - { javascript: "$scope.SampleRecords=[ " }
+       - { javascript: "$scope.q = ''; " }
+       - { javascript: "$scope.pageSize = 10; " }
+       - { javascript: "$scope.currentPage = 0; " }
+       - { javascript: "app.controller('Table', ['$scope', '$filter', function ($scope, $filter) { "}
+       - { javascript: "var app = angular.module(\"AngTable\", []);  "}
+
+   - name: Bullet proof approach by putting the JS into form - writing at the end of the file
+     lineinfile: dest=/Tabulogs/AnsibleWorkDesk/Perimeter1/table.js line={{ item.javascript }} insertafter=EOF
+     with_items:
+       - { javascript: " ]; " }
+       - { javascript: "$scope.getData = function () { " }
+       - { javascript: "return $filter('filter')($scope.SampleRecords, $scope.q) " }
+       - { javascript: " }; "}
+       - { javascript: "$scope.numberOfPages=function(){ "}
+       - { javascript: "return Math.ceil($scope.getData().length/$scope.pageSize); "}
+       - { javascript: "}; "}
+       - { javascript: "}]); "}
+       - { javascript: "app.filter('startFrom', function() { "}
+       - { javascript: "    return function(input, start) { "}
+       - { javascript: "start = +start; "}
+       - { javascript: "return input.slice(start); "}
+       - { javascript: " } "}
+       - { javascript: "}); "}
+ 
+# Its not ok to use rm -f . I will update this part later for the Ansible RM module
+
+   - name: Destroying Local Files
+     shell: rm -f /Tabulogs/AnsibleWorkDesk/Servers/* && /Tabulogs/AnsibleWorkDesk/All*
 
