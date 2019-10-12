@@ -13,7 +13,7 @@
 # It has been adapter for Centos7 only.
 #
 --- 
- - hosts: failedinstallationSNMP
+ - hosts: "{{ variable_host }}"
    gather_facts: no
    become: yes
    become_method: sudo
