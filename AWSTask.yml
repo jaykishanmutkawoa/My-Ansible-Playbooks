@@ -1,0 +1,22 @@
+## A basic Ansible Playbook to deploy AWS EC2 Instance
+# Author: jmutkawoa@cyberstorm.mu
+
+- name: EC2 Instance creation
+  hosts: localhost
+  connection: local
+  tasks:
+  - name: Launching the EC2 instance
+    ec2: 
+      instance_type: t2.nano
+      key_name: ansible
+      image: ami-0b69ea66ff7391e80
+      region: us-east-1
+      group: default
+      count: 1
+      vpc_subnet_id: subnet-ef9179a4
+      wait: yes
+      assign_public_ip: yes
+ 
+
+
+
